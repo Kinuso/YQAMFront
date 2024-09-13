@@ -1,0 +1,18 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  @font-face {
+    font-family: "Fontin";
+    src: url("@/assets/fonts/Fontin-Regular.ttf") format("ttf");
+    font-weight: 400;
+    font-style: normal;
+  }
+  @font-face {
+    font-family: "Montserrat";
+    src: url("@/assets/fonts/Montserrat-Regular.ttf") format("ttf");
+    font-weight: 400;
+    font-style: normal;
+  }
+}
