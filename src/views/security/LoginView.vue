@@ -1,19 +1,24 @@
 <script setup>
 import { ref } from "vue";
 import { useUserStore } from "@/stores/user";
+import router from "@/router";
 
-const userStore = useUserStore();
-
+if (localStorage.getItem("user")){
+  router.push("/")
+}
 
 const formLogin = ref({
   email: null,
   password: null,
 });
 
+const userStore = useUserStore();
+
 function login() {
-  // userStore.login(formLogin.value);
-  console.log(formLogin.value);
+  userStore.login(formLogin.value);
 }
+
+
 
 </script>
 

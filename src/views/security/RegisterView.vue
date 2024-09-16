@@ -5,14 +5,23 @@ import { useUserStore } from "@/stores/user";
 const userStore = useUserStore();
 
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$/;
 
 function validateEmail(email) {
   return emailRegex.test(email);
 }
 
-function login() {
+function validatePassword(password) {
+  return passwordRegex.test(password);
+}
+
+function register() {
   if (!validateEmail(formLogin.value.email)) {
     alert("Please enter a valid email address.");
+    return;
+  }
+  if (!validatePassword(formLogin.value.password)) {
+    alert("mot de passe faible.");
     return;
   }
 }
@@ -30,11 +39,20 @@ const formLogin = ref({
   <div
     class="flex flex-col justify-center items-center h-screen bg-ivory text-lightJet"
   >
-    <h1 class="text-5xl m-10 font-Fontin">Se connecter</h1>
+    <h1 class="text-5xl m-10 font-Fontin">S'inscrire</h1>
     <form
-      @submit.prevent="login"
+      @submit.prevent="register"
       class="flex flex-col justify-center items-center border-y-2 border-lightJet p-10"
     >
+      <div class="mb-4">
+        <input
+          type="text"
+          v-model="formLogin.email"
+          placeholder="Adresse Email"
+          required
+          class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
+        />
+      </div>
       <div class="mb-4">
         <input
           type="text"
@@ -44,14 +62,13 @@ const formLogin = ref({
           class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
         />
       </div>
-      <div class="mb-6">
+      <div class="mb-4">
         <input
-          class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
-          v-model="formLogin.passwordValidate"
+          type="text"
+          v-model="formLogin.lastname"
+          placeholder="Nom"
           required
-          id="password"
-          type="password"
-          placeholder="Confirmation mot de passe"
+          class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
         />
       </div>
       <div class="mb-6">
@@ -79,8 +96,8 @@ const formLogin = ref({
       </button>
     </form>
     <router-link to="/login" class="font-Montserrat pt-4 text-center"
-      >Déjà un compte ?<br />
-      Je me connecte
+      >Déjà un compte ?
+      <span class="text-tomato">Je me connecte</span>
     </router-link>
   </div>
 </template>
