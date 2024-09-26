@@ -24,9 +24,6 @@ class UserApi {
   logOut() {
     localStorage.removeItem("user");
   }
-  
 }
-
-
 
 export default new UserApi();

@@ -1,42 +1,72 @@
 import axios from "./api";
-import { useUserStore } from "@/stores/user";
 
 class RecipeApi {
+  getBaseUrl() {
+    return "/recipe";
+  }
+
   getToken() {
-    const userStore = useUserStore();
+    const user = JSON.parse(localStorage.getItem("user"));
     return {
-      headers: { Authorization: `Bearer ${userStore.user.token}` },
+      headers: { Authorization: `Bearer ${user.token}` },
     };
+  }
+
+  index() {
+    const url = this.getBaseUrl() + "s";
+    return axios.get(url);
+  }
+
+  mostRecents() {
+    const url = this.getBaseUrl() + "/recent";
+    return axios.get(url);
+  }
+
+  specific(title) {
+    const url = this.getBaseUrl() + `/${title}`;
+    return axios.get(url);
   }
 
   new(data) {
     const config = this.getToken();
-    const url = this.getBaseUrl() + "new";
-    return axios.post(config, url, data);
+    const url = this.getBaseUrl() + "/admin/new";
+    return axios.post(url, data, config);
   }
 
   update(data) {
     const config = this.getToken();
-    const url = this.getBaseUrl() + "update";
-    return axios.post(config, url, data);
+    const url = this.getBaseUrl() + "/admin/update";
+    return axios.post(url, data, config);
   }
 
   delete(data) {
-        const config = this.getToken();
-        const url = this.getBaseUrl() + "delete";
-        return axios.post(config, url, data);
-  }
-
-  index(data) {
-    return axios.post("/recipes", data);
+    const config = this.getToken();
+    const url = this.getBaseUrl() + "/admin/delete";
+    return axios.post(url, data, config);
   }
 
   types() {
-    return axios.get("/recipe/types");
+    const config = this.getToken();
+    const url = this.getBaseUrl() + "/types";
+    return axios.get(url, config);
   }
 
   categories() {
-    return axios.get("/recipe/categories");
+    const config = this.getToken();
+    const url = this.getBaseUrl() + "/categories";
+    return axios.get(url, config);
+  }
+
+  upVoteRecipe(data) {
+    const config = this.getToken();
+    const url = this.getBaseUrl() + "/admin/upVote";
+    return axios.post(url, data);
+  }
+
+  removeUpVoteRecipe(data) {
+    const config = this.getToken();
+    const url = this.getBaseUrl() + "/removeUpVote";
+    return axios.post(url, data);
   }
 }
 

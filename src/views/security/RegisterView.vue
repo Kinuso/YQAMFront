@@ -1,11 +1,17 @@
 <script setup>
 import { ref } from "vue";
 import { useUserStore } from "@/stores/user";
+import router from "@/router";
 
 const userStore = useUserStore();
 
+if (localStorage.getItem("user")) {
+  router.push("/");
+}
+
 const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$/;
+const passwordRegex =
+  /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,32}$/;
 
 function validateEmail(email) {
   return emailRegex.test(email);

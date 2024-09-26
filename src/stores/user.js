@@ -12,10 +12,9 @@ export const useUserStore = defineStore("user", {
       UserApi.login(data)
         .then((response) => {
           this.user = response.data;
-          console.log(response.data);
-          localStorage.setItem("user", JSON.stringify(this.user.loginInfo));
+          localStorage.setItem("user", JSON.stringify(this.user));
           router.push({ name: "home" });
-          window.location.reload();
+          location.reload();
         })
         .catch((err) => console.log(err));
     },

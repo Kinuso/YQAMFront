@@ -37,8 +37,8 @@ const router = createRouter({
     },
     ,
     {
-      path: "/recipe",
-      name: "recipe",
+      path: "/recipe/:title",
+      name: "show-recipe",
       component: () => import("../views/recipe/RecipeView.vue"),
     },
     {
@@ -69,7 +69,5 @@ router.beforeEach((to, from, next) => {
     next();
   }
 });
-
-
 
 export default router;

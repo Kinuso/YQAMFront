@@ -1,11 +1,22 @@
-<script setup>
+<script setup lang="ts">
 import { ref } from "vue";
 import { useUserStore } from "@/stores/user";
 import router from "@/router";
+import { useToast } from "vue-toast-notification";
 
-if (localStorage.getItem("user")){
-  router.push("/")
+if (localStorage.getItem("user")) {
+ 
 }
+
+const $toast = useToast();
+
+const notifyMessage = (type, message) => {
+  $toast.open({
+    message: message,
+    type: type,
+    duration: 5000,
+  });
+};
 
 const formLogin = ref({
   email: null,
@@ -15,11 +26,22 @@ const formLogin = ref({
 const userStore = useUserStore();
 
 function login() {
-  userStore.login(formLogin.value);
+  try {
+    notifyMessage("success", "Connexion en cours...");
+
+    const result = userStore.login(formLogin.value);
+
+    notifyMessage("success", "Connexion réussie");
+
+    router.push("/");
+  } catch (error) {
+    console.error(error);
+    notifyMessage("error", error.message || "Une erreur s'est produite");
+  }
 }
 
-
-
+// Emit event to parent component about successful login
+defineEmits(["onLoginSuccess"]);
 </script>
 
 <template>
@@ -61,4 +83,3 @@ function login() {
 </template>
 
 <style lang="scss" scoped></style>
-font-Montserrat

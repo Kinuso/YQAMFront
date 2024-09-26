@@ -1,31 +1,53 @@
 <script setup>
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import RecipeApi from "@/service/RecipeApi";
+import { useUserStore } from "@/stores/user";
+
+const userStore = useUserStore();
 
 onMounted(() => {
-
   try {
-    
+    getCategories();
+    getTypes();
   } catch (e) {
-    
+    console.log(e);
   }
+});
 
-})
+const getCategories = () => {
+  RecipeApi.categories().then((response) => {
+    categories.value = response.data.categories;
+  });
+};
 
+const getTypes = () => {
+  RecipeApi.types().then((response) => {
+    types.value = response.data.types;
+  });
+};
+const categories = ref([]);
+const types = ref([]);
+
+const user = localStorage.getItem("user");
 
 const formRecipe = ref({
+  user: JSON.parse(user).email,
   title: null,
   description: null,
   protein: null,
   carbs: null,
   fat: null,
   calories: null,
-  ingredients: [{name: ""}],
-  steps: [{name: ""}],
+  ingredients: [{ name: "", quantity: null }],
+  steps: [{ name }],
+  categories: [],
+  types: [],
+  forHowManyPeople: null,
+  imgUrl: null,
 });
 
 function handleRecipe() {
-  console.log(formRecipe.value);
+  RecipeApi.new(formRecipe.value);
 }
 
 let ingredientCounter = ref(0);
@@ -53,10 +75,8 @@ function removeStep(index) {
 </script>
 
 <template>
-  <div
-    class="flex flex-col justify-center items-center h-screen bg-ivory text-lightJet mt-20"
-  >
-    <h1 class="text-5xl mt-10 font-Fontin">Je créer ma recette</h1>
+  <div class="flex flex-col justify-center items-center bg-ivory text-lightJet">
+    <h1 class="text-5xl mt-10 font-Fontin pb-4">Je créer ma recette</h1>
 
     <form
       @submit.prevent="handleRecipe"
@@ -71,9 +91,9 @@ function removeStep(index) {
         />
       </div>
 
-      <div class="mb-6">
+      <div class="">
         <textarea
-          class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
+          class="font-Montserrat input input-bordered border-2 w-full indent-2 rounded-lg border-lightJet p-3 bg-ivory my-2 mb-8"
           placeholder="Description de la recette"
           v-model="formRecipe.description"
         ></textarea>
@@ -82,8 +102,17 @@ function removeStep(index) {
       <div class="mb-6">
         <input
           class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
+          v-model="formRecipe.forHowManyPeople"
+          type="number"
+          placeholder="Nombre de personne"
+        />
+      </div>
+
+      <div class="mb-6">
+        <input
+          class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
           v-model="formRecipe.protein"
-          type="text"
+          type="number"
           placeholder="Protéine (en gramme)"
         />
       </div>
@@ -92,7 +121,7 @@ function removeStep(index) {
         <input
           class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
           v-model="formRecipe.carbs"
-          type="text"
+          type="number"
           placeholder="Glucides (en gramme)"
         />
       </div>
@@ -101,7 +130,7 @@ function removeStep(index) {
         <input
           class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
           v-model="formRecipe.fat"
-          type="text"
+          type="number"
           placeholder="Lipides (en gramme)"
         />
       </div>
@@ -110,81 +139,172 @@ function removeStep(index) {
         <input
           class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
           v-model="formRecipe.calories"
-          type="text"
+          type="number"
           placeholder="Calories (en Kcal)"
         />
       </div>
+      <div class="mb-6">
+        <input
+          class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
+          v-model="formRecipe.imgUrl"
+          type="text"
+          placeholder="Lien de l'image"
+        />
+      </div>
+      <div class="grid grid-cols-2 gap-8 mb-12">
+        <div>
+          <h2
+            class="mt-10 text-3xl font-Fontin border-t-2 border-lightJet p-10 text-center"
+          >
+            Ingrédients
+          </h2>
+          <div id="ingredient">
+            <div
+              v-for="(ingredient, index) in formRecipe.ingredients"
+              :key="index"
+              class="mb-6 flex items-start"
+            >
+              <div class="flex flex-col">
+                <div class="flex-grow mr-4">
+                  <label class="block mb-1">{{
+                    index === 0 ? "Ingrédient 1" : `Ingrédient ${index + 1}`
+                  }}</label>
+                  <input
+                    class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
+                    v-model="formRecipe.ingredients[index].name"
+                    type="text"
+                    placeholder="Ingrédient"
+                  />
+                </div>
 
-      <h2 class="mt-10 text-3xl font-Fontin border-t-2 border-lightJet p-10">
-        Ingrédients
-      </h2>
-
-      <div id="ingredient">
-        <div
-          v-for="(ingredient, index) in formRecipe.ingredients"
-          :key="index"
-          class="mb-6"
-        >
-          <input
-            class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
-            v-model="formRecipe.ingredients[index].name"
-            type="text"
-            placeholder="Ingrédient"
-          />
+                <input
+                  class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
+                  v-model="formRecipe.ingredients[index].quantity"
+                  type="text"
+                  placeholder="Quantité"
+                />
+                <button
+                  type="button"
+                  @click="removeIngredient(index)"
+                  class="ml-2 text-red-500 hover:text-red-700"
+                >
+                  Supprimer
+                </button>
+              </div>
+            </div>
+          </div>
 
           <button
-            @click="removeIngredient(index)"
-            class="ml-2 text-red-500 hover:text-red-700"
+            @click="addIngredient"
+            type="button"
+            class="text-darkJet bg-melon p-1 rounded-lg px-4"
           >
-            Supprimer
+            Ajouter un ingrédient
+          </button>
+        </div>
+
+        <div>
+          <h2
+            class="mt-10 text-3xl font-Fontin border-t-2 border-lightJet p-10 text-center"
+          >
+            Étapes
+          </h2>
+
+          <div id="step">
+            <div
+              v-for="(step, index) in formRecipe.steps"
+              :key="index"
+              class="mb-6"
+            >
+              <label class="block mb-1">{{
+                index === 0 ? "Étape 1" : `Étape ${index + 1}`
+              }}</label>
+              <input
+                class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
+                v-model="formRecipe.steps[index].name"
+                type="text"
+                placeholder="Ingrédient"
+              />
+
+              <button
+                type="button"
+                @click="removeStep(index)"
+                class="ml-2 text-red-500 hover:text-red-700"
+              >
+                Supprimer
+              </button>
+            </div>
+          </div>
+
+          <button
+            @click="addStep"
+            type="button"
+            class="text-darkJet bg-melon p-1 rounded-lg px-4"
+          >
+            Ajouter une étape
           </button>
         </div>
       </div>
 
-      <button
-        @click="addIngredient"
-        class="bg-melon hover:bg-tomato text-darkJet font-bold p-1 px-4 rounded-lg mb-4"
+      <div
+        class="grid grid-cols-2 gap-8 mb-12 border-b-2 border-lightJet w-full text-center"
       >
-        Ajouter un ingrédient
-      </button>
-
-      <h2 class="mt-10 text-3xl font-Fontin border-t-2 border-lightJet p-10">
-        Étapes
-      </h2>
-
-      <div id="step">
-        <div
-          v-for="(step, index) in formRecipe.steps"
-          :key="index"
-          class="mb-6"
-        >
-          <label class="block mb-1">{{
-            index === 0 ? "Étape 1" : `Étape ${index + 1}`
-          }}</label>
-          <input
-            class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
-            v-model="formRecipe.steps[index].name"
-            type="text"
-            placeholder="Ingrédient"
-          />
-
-          <button
-            @click="removeStep(index)"
-            class="ml-2 text-red-500 hover:text-red-700"
+        <div>
+          <h2
+            class="mt-10 text-3xl font-Fontin border-t-2 border-lightJet p-10"
           >
-            Supprimer
-          </button>
+            Catégories
+          </h2>
+
+          <div id="categories">
+            <div
+              v-for="(category, index) in categories"
+              :key="index"
+              class="mb-4 flex items-center"
+            >
+              <label class="flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  v-model="formRecipe.categories"
+                  :value="category.name"
+                  class="mr-2"
+                />
+                <span>{{ category.name }}</span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <h2
+            class="text-center mt-10 text-3xl font-Fontin border-t-2 border-lightJet p-10"
+          >
+            Types
+          </h2>
+
+          <div id="types">
+            <div
+              v-for="(type, index) in types"
+              :key="index"
+              class="mb-4 flex items-center"
+            >
+              <label class="flex items-center cursor-pointer">
+                <input
+                  type="checkbox"
+                  v-model="formRecipe.types"
+                  :value="type.name"
+                  class="mr-2"
+                />
+                <span>{{ type.name }}</span>
+              </label>
+            </div>
+          </div>
         </div>
       </div>
-
       <button
-        @click="addStep"
-        class="bg-melon hover:bg-tomato text-darkJet font-bold p-1 px-4 rounded-lg mb-4"
+        type="submit"
+        class="bg-melon hover:bg-tomato hover:text-ivory text-darkJet font-bold p-1 px-4 rounded-lg mb-4"
       >
-        Ajouter une étape
-      </button>
-
-      <button type="submit" class="text-darkJet bg-melon p-1 rounded-lg px-4">
         Je créer ma recette
       </button>
     </form>
