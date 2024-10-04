@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from "vue";
-import { useUserStore } from "@/stores/user";
-import router from "@/router";
+import { useUserStore } from "../../stores/user";
+import router from "../../router/index";
 
 const userStore = useUserStore();
 
@@ -52,7 +52,7 @@ const formLogin = ref({
     >
       <div class="mb-4">
         <input
-          type="text"
+          type="email"
           v-model="formLogin.email"
           placeholder="Adresse Email"
           required

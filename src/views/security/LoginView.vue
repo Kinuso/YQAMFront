@@ -1,11 +1,10 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { useUserStore } from "@/stores/user";
-import router from "@/router";
+import { useUserStore } from "../../stores/user";
+import router from "../../router/index";
 import { useToast } from "vue-toast-notification";
 
 if (localStorage.getItem("user")) {
- 
 }
 
 const $toast = useToast();
@@ -29,7 +28,7 @@ function login() {
   try {
     notifyMessage("success", "Connexion en cours...");
 
-    const result = userStore.login(formLogin.value);
+    userStore.login(formLogin.value);
 
     notifyMessage("success", "Connexion réussie");
 
@@ -40,7 +39,6 @@ function login() {
   }
 }
 
-// Emit event to parent component about successful login
 defineEmits(["onLoginSuccess"]);
 </script>
 
@@ -55,7 +53,7 @@ defineEmits(["onLoginSuccess"]);
     >
       <div class="mb-4">
         <input
-          type="text"
+          type="email"
           v-model="formLogin.email"
           placeholder="Adresse email"
           required

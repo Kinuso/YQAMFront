@@ -23,6 +23,7 @@ class UserApi {
 
   logOut() {
     localStorage.removeItem("user");
+    window.location.reload();
   }
 }
 

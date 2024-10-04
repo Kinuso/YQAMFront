@@ -1,5 +1,5 @@
 <script setup>
-import RecipeApi from "@/service/RecipeApi";
+import RecipeApi from "../service/RecipeApi";
 import { onMounted, ref } from "vue";
 
 onMounted(() => {
@@ -13,6 +13,7 @@ const recentRecipes = ref({});
 const getRecipes = () => {
   RecipeApi.index().then((response) => {
     recipes.value = response.data.recipes;
+    console.log(response.data.recipes);
   });
 };
 
@@ -24,20 +25,20 @@ const getRecentRecipes = () => {
 </script>
 <template>
   <div v-if="recipes" class="w-screen">
-    <div class="main h-60 font-Fontin flex justify-center items-center">
-      <H1
-        class="mainTitle p-6 text-5xl text-center"
-        alt="Recette diet proteine rapide bon sucré salé"
-        >Y'a quoi à manger ?</H1
-      >
+    <div
+      class="main h-60 font-Fontin flex justify-center items-center"
+      alt="Recette facile rapide diet rapide bon sucré salé Y'a quoi à manger"
+    >
+      <H1 class="mainTitle p-6 text-5xl text-center">Y'a quoi à manger ?</H1>
     </div>
-    <p>"Y'a quoi à manger ?" C'est quoi ?</p>
-    <p>
-      Nous sommes un site communautaire, permettant aux utilisateurs de
-      consulter et de créer des recettes.
-    </p>
-    <i>Pour les fans, par les fans</i>
-
+    <div class="text-center">
+      <p>"Y'a quoi à manger ?" C'est quoi ?</p>
+      <p>
+        Nous sommes un site communautaire, permettant aux utilisateurs de
+        consulter et de créer des recettes.
+      </p>
+      <i>Pour les fans, par les fans</i>
+    </div>
     <h2 class="text-4xl indent-4">Les plus récents</h2>
     <div class="bg-lightJet h-fit w-full">
       <RouterLink
@@ -65,7 +66,7 @@ const getRecentRecipes = () => {
     </div>
 
     <h2 class="text-4xl indent-4">Les mieux notés</h2>
-    <div class="bg-lightJet h-fit w-full absolute">
+    <div class="bg-lightJet h-fit w-full">
       <RouterLink
         class="relative top-5 left-5 px-5 py-1 font-Fontin rounded-xl bg-melon text-darkJet hover:bg-tomato hover:text-darkJet text-center"
         to="/most-rated"
@@ -74,6 +75,26 @@ const getRecentRecipes = () => {
       <div class="flex pt-10 justify-evenly flex-wrap pb-5">
         <RouterLink
           v-for="(recipe, index) in recentRecipes"
+          :key="index"
+          class="my-1 mx-5 font-Fontin rounded-xl bg-melon text-lightJet hover:bg-tomato hover:text-darkJet"
+          :to="{ name: 'show-recipe', params: { title: recipe.title } }"
+        >
+          <div
+            class="w-56 h-56 bg-cover bg-center rounded-xl"
+            :style="{ backgroundImage: `url(${recipe.imageUrl})` }"
+          >
+            <p class="relative top-44 bg-ivory text-center rounded-lg">
+              {{ recipe.title }}
+            </p>
+          </div>
+        </RouterLink>
+      </div>
+    </div>
+    <h2 class="text-4xl indent-4">Toutes les recettes</h2>
+    <div class="bg-lightJet h-fit w-full">
+      <div class="flex pt-10 justify-evenly flex-wrap pb-5">
+        <RouterLink
+          v-for="(recipe, index) in recipes"
           :key="index"
           class="my-1 mx-5 font-Fontin rounded-xl bg-melon text-lightJet hover:bg-tomato hover:text-darkJet"
           :to="{ name: 'show-recipe', params: { title: recipe.title } }"

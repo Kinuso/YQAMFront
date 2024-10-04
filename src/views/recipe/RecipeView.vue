@@ -1,10 +1,11 @@
 <script setup>
-import RecipeApi from "@/service/RecipeApi";
-import UpVoteApi from "@/service/UpVoteApi";
+import RecipeApi from "../../service/RecipeApi";
+import UpVoteApi from "../../service/UpVoteApi";
 import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toast-notification";
 
+console.log("efmjjezafj");
 const $toast = useToast();
 
 const notifyMessage = (type, message) => {
@@ -20,9 +21,21 @@ const router = useRouter();
 const isUpVoted = ref(null);
 const loadingUpVote = ref(false);
 const upVoteCredentials = ref({
-  userId: JSON.parse(localStorage.getItem("user")).id,
+  userId: null,
   recipeId: null,
 });
+
+const isLogged = () => {
+  if (localStorage.getItem("user")) {
+    upVoteCredentials.value.userId = JSON.parse(
+      localStorage.getItem("user")
+    ).id;
+    findUpvote();
+    return true;
+  } else {
+    return false;
+  }
+};
 
 onMounted(() => {
   getRecipe();
@@ -33,11 +46,18 @@ const getRecipe = () => {
   RecipeApi.specific(title).then((res) => {
     recipe.value = res.data.recipe;
     upVoteCredentials.value.recipeId = res.data.recipe.id;
-    findUpvote();
   });
 };
 
 const upVoteRecipe = () => {
+  if (!isLogged()) {
+    notifyMessage(
+      "warning",
+      "Veuillez vous connecter pour recommander la recette"
+    );
+    return;
+  }
+  89;
   loadingUpVote.value = true;
   UpVoteApi.upVoteRecipe(upVoteCredentials.value).then((res) => {
     notifyMessage("success", "Recommandation ajoutée pour cette recette !");

@@ -1,18 +1,25 @@
 <script setup>
 import { onMounted, ref } from "vue";
-import RecipeApi from "@/service/RecipeApi";
-import { useUserStore } from "@/stores/user";
+import RecipeApi from "../../service/RecipeApi";
+import { useUserStore } from "../../stores/user";
 
 const userStore = useUserStore();
+const $toast = useToast();
 
 onMounted(() => {
-  try {
-    getCategories();
-    getTypes();
-  } catch (e) {
-    console.log(e);
-  }
+  getCategories();
+  getTypes();
 });
+
+const notifyMessage = (type, message) => {
+  $toast.open({
+    message: message,
+    type: type,
+    duration: 5000,
+  });
+};
+
+const user = localStorage.getItem("user");
 
 const getCategories = () => {
   RecipeApi.categories().then((response) => {
@@ -25,10 +32,9 @@ const getTypes = () => {
     types.value = response.data.types;
   });
 };
+
 const categories = ref([]);
 const types = ref([]);
-
-const user = localStorage.getItem("user");
 
 const formRecipe = ref({
   user: JSON.parse(user).email,
@@ -47,7 +53,12 @@ const formRecipe = ref({
 });
 
 function handleRecipe() {
-  RecipeApi.new(formRecipe.value);
+  RecipeApi.new(formRecipe.value).then((res) => {
+    notifyMessage(res.status, res.message);
+    if (ref.status == "success") {
+      router.push({ name: "home" });
+    }
+  });
 }
 
 let ingredientCounter = ref(0);
@@ -104,6 +115,7 @@ function removeStep(index) {
           class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
           v-model="formRecipe.forHowManyPeople"
           type="number"
+          min="1"
           placeholder="Nombre de personne"
         />
       </div>
@@ -113,6 +125,7 @@ function removeStep(index) {
           class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
           v-model="formRecipe.protein"
           type="number"
+          min="0"
           placeholder="Protéine (en gramme)"
         />
       </div>
@@ -121,6 +134,7 @@ function removeStep(index) {
         <input
           class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
           v-model="formRecipe.carbs"
+          min="0"
           type="number"
           placeholder="Glucides (en gramme)"
         />
@@ -139,6 +153,7 @@ function removeStep(index) {
         <input
           class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
           v-model="formRecipe.calories"
+          min="0"
           type="number"
           placeholder="Calories (en Kcal)"
         />
