@@ -23,7 +23,7 @@ class RecipeApi {
   }
 
   specific(title) {
-    const url = this.getBaseUrl() + `/${title}`;
+    const url = this.getBaseUrl() + `/specific/${title}`;
     return axios.get(url);
   }
 
