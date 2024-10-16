@@ -2,20 +2,10 @@
 import { ref } from "vue";
 import { useUserStore } from "../../stores/user";
 import router from "../../router/index";
-import { useToast } from "vue-toast-notification";
 
 if (localStorage.getItem("user")) {
+  router.push({ name: "home" });
 }
-
-const $toast = useToast();
-
-const notifyMessage = (type, message) => {
-  $toast.open({
-    message: message,
-    type: type,
-    duration: 5000,
-  });
-};
 
 const formLogin = ref({
   email: null,
@@ -25,18 +15,7 @@ const formLogin = ref({
 const userStore = useUserStore();
 
 function login() {
-  try {
-    notifyMessage("success", "Connexion en cours...");
-
-    userStore.login(formLogin.value);
-
-    notifyMessage("success", "Connexion réussie");
-
-    router.push("/");
-  } catch (error) {
-    console.error(error);
-    notifyMessage("error", error.message || "Une erreur s'est produite");
-  }
+  userStore.login(formLogin.value);
 }
 
 defineEmits(["onLoginSuccess"]);

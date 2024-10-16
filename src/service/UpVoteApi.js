@@ -25,6 +25,11 @@ class RecipeApi {
     const url = "/isUpVotedByUser";
     return axios.post(url, data, config);
   }
+
+  likedRecipe(data) {
+    const url = `/likedRecipe/${data}`;
+    return axios.get(url);
+  }
 }
 
 export default new RecipeApi();

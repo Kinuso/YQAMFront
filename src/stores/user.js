@@ -1,6 +1,17 @@
 import { defineStore } from "pinia";
 import UserApi from "../service/UserApi";
 import router from "../router/index.js";
+import { useToast } from "vue-toast-notification";
+
+const $toast = useToast();
+
+const notifyMessage = (type, message) => {
+  $toast.open({
+    message: message,
+    type: type,
+    duration: 5000,
+  });
+};
 
 export const useUserStore = defineStore("user", {
   state: () => ({
@@ -11,17 +22,13 @@ export const useUserStore = defineStore("user", {
     login(data) {
       UserApi.login(data)
         .then((response) => {
-          this.user = response.data;
+          notifyMessage("success", "connexion réussie");
+          this.user = response.data.user;
           localStorage.setItem("user", JSON.stringify(this.user));
-          router.push({ name: "home" });
           location.reload();
+          router.push("/");
         })
-        .catch((err) => console.log(err));
-    },
-    loginExternal(data) {
-      this.user = data;
-      location.reload();
-      router.push({ name: "home" });
+        .catch((err) => notifyMessage("error", "identifiants incorrect"));
     },
   },
 });

@@ -2,6 +2,8 @@
 import { onMounted, ref } from "vue";
 import RecipeApi from "../../service/RecipeApi";
 import { useUserStore } from "../../stores/user";
+import { useToast } from "vue-toast-notification";
+import router from "../../router";
 
 const userStore = useUserStore();
 const $toast = useToast();
@@ -44,21 +46,26 @@ const formRecipe = ref({
   carbs: null,
   fat: null,
   calories: null,
-  ingredients: [{ name: "", quantity: null }],
-  steps: [{ name }],
+  ingredient: [{ name: "", quantity: null }],
+  step: [{ name: "" }],
   categories: [],
-  types: [],
+  type: [],
   forHowManyPeople: null,
-  imgUrl: null,
+  imageUrl: null,
 });
 
 function handleRecipe() {
-  RecipeApi.new(formRecipe.value).then((res) => {
-    notifyMessage(res.status, res.message);
-    if (ref.status == "success") {
-      router.push({ name: "home" });
-    }
-  });
+  RecipeApi.new(formRecipe.value)
+    .then((res) => {
+      notifyMessage(res.data.status, res.data.message);
+      router.push({ name: "profile" });
+    })
+    .catch((error) => {
+      console.log(error);
+      const errorMessage =
+        error.response?.data?.message || "An unexpected error occurred";
+      notifyMessage("error", errorMessage);
+    });
 }
 
 let ingredientCounter = ref(0);
@@ -66,21 +73,21 @@ let stepCounter = ref(0);
 
 function addIngredient() {
   ingredientCounter.value++;
-  formRecipe.value.ingredients.push({ name: "" });
+  formRecipe.value.ingredient.push({ name: "" });
 }
 
 function removeIngredient(index) {
-  formRecipe.value.ingredients.splice(index, 1);
+  formRecipe.value.ingredient.splice(index, 1);
   ingredientCounter.value--;
 }
 
 function addStep() {
   stepCounter.value++;
-  formRecipe.value.steps.push({ name: "" });
+  formRecipe.value.step.push({ name: "" });
 }
 
 function removeStep(index) {
-  formRecipe.value.steps.splice(index, 1);
+  formRecipe.value.step.splice(index, 1);
   stepCounter.value--;
 }
 </script>
@@ -161,7 +168,7 @@ function removeStep(index) {
       <div class="mb-6">
         <input
           class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
-          v-model="formRecipe.imgUrl"
+          v-model="formRecipe.imageUrl"
           type="text"
           placeholder="Lien de l'image"
         />
@@ -175,7 +182,7 @@ function removeStep(index) {
           </h2>
           <div id="ingredient">
             <div
-              v-for="(ingredient, index) in formRecipe.ingredients"
+              v-for="(ingredient, index) in formRecipe.ingredient"
               :key="index"
               class="mb-6 flex items-start"
             >
@@ -186,7 +193,7 @@ function removeStep(index) {
                   }}</label>
                   <input
                     class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
-                    v-model="formRecipe.ingredients[index].name"
+                    v-model="formRecipe.ingredient[index].name"
                     type="text"
                     placeholder="Ingrédient"
                   />
@@ -194,7 +201,7 @@ function removeStep(index) {
 
                 <input
                   class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
-                  v-model="formRecipe.ingredients[index].quantity"
+                  v-model="formRecipe.ingredient[index].quantity"
                   type="text"
                   placeholder="Quantité"
                 />
@@ -227,18 +234,17 @@ function removeStep(index) {
 
           <div id="step">
             <div
-              v-for="(step, index) in formRecipe.steps"
+              v-for="(step, index) in formRecipe.step"
               :key="index"
               class="mb-6"
             >
               <label class="block mb-1">{{
                 index === 0 ? "Étape 1" : `Étape ${index + 1}`
               }}</label>
-              <input
+              <textarea
                 class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
-                v-model="formRecipe.steps[index].name"
-                type="text"
-                placeholder="Ingrédient"
+                v-model="formRecipe.step[index].description"
+                placeholder="Étape"
               />
 
               <button
@@ -306,7 +312,7 @@ function removeStep(index) {
               <label class="flex items-center cursor-pointer">
                 <input
                   type="checkbox"
-                  v-model="formRecipe.types"
+                  v-model="formRecipe.type"
                   :value="type.name"
                   class="mr-2"
                 />

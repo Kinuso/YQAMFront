@@ -13,12 +13,11 @@ const recentRecipes = ref({});
 const getRecipes = () => {
   RecipeApi.index().then((response) => {
     recipes.value = response.data.recipes;
-    console.log(response.data.recipes);
   });
 };
 
 const getRecentRecipes = () => {
-  RecipeApi.mostRecents().then((response) => {
+  RecipeApi.mostRecents(5).then((response) => {
     recentRecipes.value = response.data.recipes;
   });
 };
@@ -57,7 +56,7 @@ const getRecentRecipes = () => {
             class="w-56 h-56 bg-cover bg-center rounded-xl"
             :style="{ backgroundImage: `url(${recipe.imageUrl})` }"
           >
-            <p class="relative top-44 bg-ivory text-center rounded-lg">
+            <p class="relative top-44 bg-ivory text-center">
               {{ recipe.title }}
             </p>
           </div>
@@ -65,45 +64,20 @@ const getRecentRecipes = () => {
       </div>
     </div>
 
-    <h2 class="text-4xl indent-4">Les mieux notés</h2>
-    <div class="bg-lightJet h-fit w-full">
-      <RouterLink
-        class="relative top-5 left-5 px-5 py-1 font-Fontin rounded-xl bg-melon text-darkJet hover:bg-tomato hover:text-darkJet text-center"
-        to="/most-rated"
-        >Tout voir >>
-      </RouterLink>
-      <div class="flex pt-10 justify-evenly flex-wrap pb-5">
-        <RouterLink
-          v-for="(recipe, index) in recentRecipes"
-          :key="index"
-          class="my-1 mx-5 font-Fontin rounded-xl bg-melon text-lightJet hover:bg-tomato hover:text-darkJet"
-          :to="{ name: 'show-recipe', params: { title: recipe.title } }"
-        >
-          <div
-            class="w-56 h-56 bg-cover bg-center rounded-xl"
-            :style="{ backgroundImage: `url(${recipe.imageUrl})` }"
-          >
-            <p class="relative top-44 bg-ivory text-center rounded-lg">
-              {{ recipe.title }}
-            </p>
-          </div>
-        </RouterLink>
-      </div>
-    </div>
     <h2 class="text-4xl indent-4">Toutes les recettes</h2>
     <div class="bg-lightJet h-fit w-full">
       <div class="flex pt-10 justify-evenly flex-wrap pb-5">
         <RouterLink
           v-for="(recipe, index) in recipes"
           :key="index"
-          class="my-1 mx-5 font-Fontin rounded-xl bg-melon text-lightJet hover:bg-tomato hover:text-darkJet"
+          class="my-1 mx-5 font-Fontin rounded-xl bg-melon text-lightJet hover:text-melon hover:bg-darkJet"
           :to="{ name: 'show-recipe', params: { title: recipe.title } }"
         >
           <div
             class="w-56 h-56 bg-cover bg-center rounded-xl"
             :style="{ backgroundImage: `url(${recipe.imageUrl})` }"
           >
-            <p class="relative top-44 bg-ivory text-center rounded-lg">
+            <p class="relative top-44 bg-ivory text-center">
               {{ recipe.title }}
             </p>
           </div>

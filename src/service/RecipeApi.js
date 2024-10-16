@@ -17,9 +17,9 @@ class RecipeApi {
     return axios.get(url);
   }
 
-  mostRecents() {
+  mostRecents(data) {
     const url = this.getBaseUrl() + "/recent";
-    return axios.get(url);
+    return axios.post(url, data);
   }
 
   specific(title) {
@@ -66,6 +66,11 @@ class RecipeApi {
   removeUpVoteRecipe(data) {
     const config = this.getToken();
     const url = this.getBaseUrl() + "/removeUpVote";
+    return axios.post(url, data);
+  }
+
+  search(data) {
+    const url = this.getBaseUrl() + `/search?searchValue=${data}`;
     return axios.post(url, data);
   }
 }

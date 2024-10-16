@@ -18,11 +18,6 @@ const routes = [
     component: () => import("../views/security/RegisterView.vue"),
   },
   {
-    path: "/most-rated",
-    name: "most-rated",
-    component: () => import("../views/recipe/MostRatedView.vue"),
-  },
-  {
     path: "/most-recent",
     name: "most-recent",
     component: () => import("../views/recipe/MostRecentView.vue"),
@@ -31,6 +26,11 @@ const routes = [
     path: "/recipe/:title",
     name: "show-recipe",
     component: () => import("../views/recipe/RecipeView.vue"),
+  },
+  {
+    path: "/search",
+    name: "recipe-search",
+    component: () => import("../views/recipe/SearchPageView.vue"),
   },
   {
     path: "/recipe/add",
@@ -43,6 +43,22 @@ const routes = [
     name: "recipe-edit",
     component: () => import("../views/recipe/RecipeEditView.vue"),
     meta: { requiresAuth: true },
+  },
+  {
+    path: "/profile",
+    name: "profile",
+    component: () => import("../views/user/ProfileView.vue"),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: "/politique-confidentialite",
+    name: "privacy-policy",
+    component: () => import("../views/privacy/PrivacyPolicyView.vue"),
+  },
+  {
+    path: "/condition-utilisation",
+    name: "term-usage",
+    component: () => import("../views/privacy/termUsageView.vue"),
   },
 ];
 

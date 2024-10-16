@@ -5,7 +5,6 @@ import { onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useToast } from "vue-toast-notification";
 
-console.log("efmjjezafj");
 const $toast = useToast();
 
 const notifyMessage = (type, message) => {
@@ -24,43 +23,44 @@ const upVoteCredentials = ref({
   userId: null,
   recipeId: null,
 });
+const isLoadingRecipe = ref(true);
 
 const isLogged = () => {
   if (localStorage.getItem("user")) {
     upVoteCredentials.value.userId = JSON.parse(
       localStorage.getItem("user")
     ).id;
-    findUpvote();
     return true;
-  } else {
-    return false;
   }
+  return false;
 };
 
-onMounted(() => {
-  getRecipe();
+onMounted(async () => {
+  await getRecipe();
+  if (isLogged()) {
+    findUpvote();
+  }
 });
 
-const getRecipe = () => {
+const getRecipe = async () => {
   const title = router.currentRoute.value.params.title;
-  RecipeApi.specific(title).then((res) => {
-    recipe.value = res.data.recipe;
-    upVoteCredentials.value.recipeId = res.data.recipe.id;
-  });
+  const res = await RecipeApi.specific(title);
+  upVoteCredentials.value.recipeId = res.data.recipe.id;
+  recipe.value = res.data.recipe;
+  isLoadingRecipe.value = false;
 };
 
 const upVoteRecipe = () => {
   if (!isLogged()) {
-    notifyMessage(
-      "warning",
-      "Veuillez vous connecter pour recommander la recette"
-    );
+    router.push({ name: "login" });
     return;
   }
-  89;
   loadingUpVote.value = true;
   UpVoteApi.upVoteRecipe(upVoteCredentials.value).then((res) => {
-    notifyMessage("success", "Recommandation ajoutée pour cette recette !");
+    notifyMessage(
+      "success",
+      "Favoris ajoutée pour cette recette ! (Vous pouvez retrouver vos recettes favorites dans votre profil)"
+    );
     findUpvote();
     loadingUpVote.value = false;
   });
@@ -69,39 +69,55 @@ const upVoteRecipe = () => {
 const removeUpVoteRecipe = () => {
   loadingUpVote.value = true;
   UpVoteApi.removeUpVoteRecipe(upVoteCredentials.value).then((res) => {
-    notifyMessage("success", "Recommandation retirée pour cette recette !");
+    notifyMessage("success", "Favoris retirée pour cette recette ! ");
     findUpvote();
     loadingUpVote.value = false;
   });
 };
 
 const findUpvote = () => {
+  if (!upVoteCredentials.value.recipeId) {
+    return;
+  }
   UpVoteApi.isUpvotedByUser(upVoteCredentials.value).then((res) => {
     isUpVoted.value = res.data.result;
   });
 };
 </script>
+
 <template>
   <div class="container mx-auto p-8 bg-ivory" v-if="recipe">
-    <h1 class="text-3xl font-bold mb-8">{{ recipe.title }}</h1>
-    <div v-if="!loadingUpVote">
-      <button @click="upVoteRecipe" v-if="!isUpVoted">
-        J'aime cette recette !
-      </button>
-      <button @click="removeUpVoteRecipe" v-else>
-        Je n'aime plus cette recette</button
-      ><br />
-    </div>
-    <span class="text-sm">Pour {{ recipe.forHowManyPeople }} personnes</span>
+    <div class="flex align-middle">
+      <h1 class="text-3xl font-bold mb-8">{{ recipe.title }}</h1>
+      <div
+        v-if="!loadingUpVote"
+        class="text-2xl pl-5 hover:cursor-pointer h-fit"
+      >
+        <div v-if="!isUpVoted" class="flex flex-row" @click="upVoteRecipe">
+          <img
+            src="../../assets/coeur.png"
+            alt="aimer la recette"
+            class="pr-3"
+          />
+          <button>J'aime cette recette !</button>
+        </div>
+        <div v-else class="flex flex-row" @click="removeUpVoteRecipe">
+          <img src="../../assets/coeur-full.png" alt="" class="pr-3" />
+          <button>Je n'aime plus cette recette</button>
+        </div>
+      </div>
+    </div>  
     <div
       class="w-56 h-56 bg-cover bg-center rounded-xl"
       :style="{ backgroundImage: `url(${recipe.imageUrl})` }"
     ></div>
+    <span class="text-xl">Pour {{ recipe.forHowManyPeople }} personnes</span
+    ><br /><br />
     <div class="flex justify-between mb-8">
       <div class="flex flex-wrap gap-4">
         <div class="flex items-center">
           <span class="text-sm">Calories:</span>
-          <span class="text-sm ml-2">{{ recipe.calories }}</span>
+          <span class="text-sm ml-2">{{ recipe.calories }} kcal</span>
         </div>
         <div class="flex items-center">
           <span class="text-sm">Glucides:</span>
