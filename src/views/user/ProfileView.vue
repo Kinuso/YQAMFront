@@ -156,9 +156,9 @@ let stepCounter = ref(0);
 function deleteAccount() {
   UserApi.deleteAccount(accountToDelete.value)
     .then((res) => {
-      notifyMessage(res.data.status, res.data.message);
-      router.push({ name: "home" });
       UserApi.logOut();
+      router.push({ name: "home" });
+      notifyMessage(res.data.status, res.data.message);
     })
     .catch((error) => {
       const errorMessage = error.response.data.message;
@@ -209,17 +209,18 @@ const getLikedRecipes = () => {
 
       <p class="text-sm text-gray-500">{{ user.email }}</p>
       <button
-        @click="showAccountUpdateForm"
-        class="text-melon hover:text-darkJet transition-colors duration-200 ease-in-out mb-8"
-      >
-        Modifier mon compte
-      </button>
-      <button
         @click="showAccountDeleteModal = true"
         class="text-tomato hover:text-darkJet transition-colors duration-200 ease-in-out mb-8"
       >
         Supprimer mon compte
       </button>
+      <button
+        @click="showAccountUpdateForm"
+        class="text-melon hover:text-darkJet transition-colors duration-200 ease-in-out mb-8"
+      >
+        Modifier mon compte
+      </button>
+
       <div class="flex flex-col justify-start">
         <form
           v-if="updateAccount"

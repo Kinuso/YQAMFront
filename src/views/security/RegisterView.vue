@@ -129,13 +129,16 @@ const formLogin = ref({
       </div>
       <div class="mb-6 flex">
         <input
-          class="font-Montserrat input input-bordered w-full max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
+          class="font-Montserrat input input-bordered mr-6 max-w-xs border-2 indent-2 rounded-lg border-lightJet p-1 bg-ivory my-2"
           v-model="formLogin.dgpr"
           required
           id="dgpr"
           type="checkbox"
         />
-        <label for="dgpr" class="h-8">J'accepte les RGPD</label>
+        <label for="dgpr" class="h-8"
+          >J’accepte les Conditions <br />
+          Générales d'Utilisation</label
+        >
       </div>
       <button type="submit" class="text-darkJet bg-melon p-1 rounded-lg px-4">
         S'inscrire

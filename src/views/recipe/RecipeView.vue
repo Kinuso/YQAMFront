@@ -87,73 +87,93 @@ const findUpvote = () => {
 
 <template>
   <div class="container mx-auto p-8 bg-ivory" v-if="recipe">
-    <div class="flex align-middle">
-      <h1 class="text-3xl font-bold mb-8">{{ recipe.title }}</h1>
-      <div
-        v-if="!loadingUpVote"
-        class="text-2xl pl-5 hover:cursor-pointer h-fit"
-      >
-        <div v-if="!isUpVoted" class="flex flex-row" @click="upVoteRecipe">
+    <div class="flex items-center justify-between mb-8">
+      <h1 class="text-3xl font-bold text-darkJet">{{ recipe.title }}</h1>
+      <div v-if="!loadingUpVote" class="text-xl hover:cursor-pointer h-fit">
+        <div
+          v-if="!isUpVoted"
+          class="flex flex-row items-center"
+          @click="upVoteRecipe"
+        >
           <img
             src="../../assets/coeur.png"
             alt="aimer la recette"
-            class="pr-3"
+            class="mr-3 w-6 h-6"
           />
-          <button>J'aime cette recette !</button>
+          <button class="bg-tomato text-white px-4 py-2 rounded">
+            J'aime cette recette !
+          </button>
         </div>
-        <div v-else class="flex flex-row" @click="removeUpVoteRecipe">
-          <img src="../../assets/coeur-full.png" alt="" class="pr-3" />
-          <button>Je n'aime plus cette recette</button>
+        <div
+          v-else
+          class="flex flex-row items-center"
+          @click="removeUpVoteRecipe"
+        >
+          <img src="../../assets/coeur-full.png" alt="" class="mr-3 w-6 h-6" />
+          <button class="bg-melon text-darkJet px-4 py-2 rounded">
+            Je n'aime plus cette recette
+          </button>
         </div>
       </div>
-    </div>  
+    </div>
+
     <div
-      class="w-56 h-56 bg-cover bg-center rounded-xl"
+      class="w-full h-64 bg-cover bg-center rounded-xl shadow-lg"
       :style="{ backgroundImage: `url(${recipe.imageUrl})` }"
     ></div>
-    <span class="text-xl">Pour {{ recipe.forHowManyPeople }} personnes</span
-    ><br /><br />
-    <div class="flex justify-between mb-8">
-      <div class="flex flex-wrap gap-4">
-        <div class="flex items-center">
+
+    <div class="mt-8 flex justify-between items-center">
+      <span class="text-xl text-darkJet"
+        >Pour {{ recipe.forHowManyPeople }} personnes</span
+      >
+      <div class="flex gap-4">
+        <div
+          class="bg-lightJet p-2 px-4 rounded text-ivory border border-gray-300"
+        >
           <span class="text-sm">Calories:</span>
           <span class="text-sm ml-2">{{ recipe.calories }} kcal</span>
         </div>
-        <div class="flex items-center">
+        <div
+          class="bg-lightJet p-2 px-4 rounded text-ivory border border-gray-300"
+        >
           <span class="text-sm">Glucides:</span>
           <span class="text-sm ml-2">{{ recipe.carbs }}g</span>
         </div>
-        <div class="flex items-center">
+        <div
+          class="bg-lightJet p-2 px-4 rounded text-ivory border border-gray-300"
+        >
           <span class="text-sm">Proteines:</span>
           <span class="text-sm ml-2">{{ recipe.protein }}g</span>
         </div>
-        <div class="flex items-center">
+        <div
+          class="bg-lightJet p-2 px-4 rounded text-ivory border border-gray-300"
+        >
           <span class="text-sm">Matières grasses:</span>
           <span class="text-sm ml-2">{{ recipe.fat }}g</span>
         </div>
       </div>
     </div>
 
-    <div class="grid grid-cols-2 gap-4 mb-8">
-      <div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+      <div class="p-4 rounded shadow-md border border-gray-300">
         <h3 class="text-xl mb-2">Categories:</h3>
         <ul class="space-y-1">
           <li
             v-for="(category, index) in recipe.categories"
             :key="index"
-            class="px-2 py-1 bg-gray-200 rounded"
+            class="px-2 py-1 bg-melon rounded text-darkJet transition-colors duration-200 ease-in-out"
           >
             {{ category.name }}
           </li>
         </ul>
       </div>
-      <div>
+      <div class="p-4 rounded shadow-md border border-gray-300">
         <h3 class="text-xl mb-2">Types:</h3>
         <ul class="space-y-1">
           <li
             v-for="(type, index) in recipe.type"
             :key="index"
-            class="px-2 py-1 bg-gray-100 rounded"
+            class="px-2 py-1 bg-melon rounded text-darkJet transition-colors duration-200 ease-in-out"
           >
             {{ type.name }}
           </li>
@@ -161,30 +181,30 @@ const findUpvote = () => {
       </div>
     </div>
 
-    <h3 class="text-xl mb-4">Ingrédients:</h3>
-    <ul class="space-y-1">
-      <li
-        v-for="(ingredient, index) in recipe.ingredient"
-        :key="index"
-        class="px-2 py-1 bg-gray-100 rounded"
-      >
-        {{ ingredient.quantity }} x {{ ingredient.name }}
-      </li>
-    </ul>
+    <div class="mt-8">
+      <h3 class="text-xl mb-4 text-darkJet">Ingrédients:</h3>
+      <ul class="space-y-1">
+        <li
+          v-for="(ingredient, index) in recipe.ingredient"
+          :key="index"
+          class="px-2 py-1 bg-melon rounded text-darkJet hover:bg-tomato hover:text-white transition-colors duration-200 ease-in-out"
+        >
+          {{ ingredient.quantity }} x {{ ingredient.name }}
+        </li>
+      </ul>
+    </div>
 
-    <h3 class="text-xl mb-4 pt-10">Étape:</h3>
-    <ol class="space-y-1">
-      <li
-        v-for="(step, index) in recipe.step"
-        :key="index"
-        class="px-2 py-1 bg-gray-100 rounded"
-      >
-        {{ index + 1 }}. {{ step.description }}
-      </li>
-    </ol>
+    <div class="mt-8">
+      <h3 class="text-xl mb-4 text-darkJet">Étape:</h3>
+      <ol class="space-y-1">
+        <li
+          v-for="(step, index) in recipe.step"
+          :key="index"
+          class="px-2 py-1 bg-lightJet rounded text-ivory border border-gray-300 transition-colors duration-200 ease-in-out"
+        >
+          {{ index + 1 }}. {{ step.description }}
+        </li>
+      </ol>
+    </div>
   </div>
 </template>
-
-<style scoped>
-/* Add any custom styles here */
-</style>
